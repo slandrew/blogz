@@ -20,6 +20,7 @@ class Blog(db.Model):
 @app.route('/blog', methods=['POST', 'GET'])
 def blogs():
 
+
     if request.method == 'POST':
         blog_title = request.form['title']
         blog_body = request.form['body']
@@ -35,12 +36,17 @@ def blogs():
         if not title_error and not body_error:
             db.session.add(new_blog)
             db.session.commit()
+            blog_id = str(new_blog.id)
             blogs = Blog.query.all()
-            return render_template('blog.html', title='Blogs', blogs=blogs)
+            return redirect('/blog?id='+blog_id)
         else:
             return render_template('newpost.html', title='New Post', blog_title=blog_title, blog_body=blog_body, title_error=title_error, body_error=body_error)
     else:
-        blogs = Blog.query.all()
+        blog_id = request.args.get('id')
+        if not blog_id:
+            blogs = Blog.query.all()
+        else:
+            blogs = Blog.query.filter_by(id=blog_id).all()
         return render_template('blog.html', title='Blogs', blogs=blogs)
 
 @app.route('/newpost', methods=['POST', 'GET'])
