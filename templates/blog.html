@@ -7,9 +7,10 @@
         {% else %}
             <div>
                 {% for blog in blogs %}
-                <div class='blogtitle'>
-                    <a href='/blog?id={{blog.id}}'><h2>{{blog.title}}</h2></a>
-                    <p class='blogpost'>{{blog.body}}</p>
+                <div class='blog-post'>
+                    <a href='/blog?id={{blog.id}}'class='blog-title'><h2>{{blog.title}}</h2></a>
+                    <p class='blog-body'>{{blog.body}}</p>
+                    <p class='pub-date'>{{blog.pub_date}}</p>
                 </div>
                 {% endfor%}
             </div>
