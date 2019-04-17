@@ -6,13 +6,31 @@
             .error {
                 color: red;
             }
+            body {
+                background-color: black;
+                color: white;
+                text-align: center;
+            }
+            .blogpost{
+                border: 15px solid white;
+                padding: 50px;
+                font-style: italic;
+                font-size: 2em;
+            }
+            .nav-button {
+                text-align: left;
+                padding: 10px;
+            }
+            a{
+                color:chartreuse;
+            }
         </style>
+        <div>
+            <a href='/blog' class='nav-button'>Blogs</a>
+            <a href='/newpost' class='nav-button'>New Post</a>
+        </div>
     </head>
     <body>
-        <div>
-            <a href='/blog'>Blogs</a> </br>
-            <a href='/newpost'>New Post</a> </br>
-        </div>
         {% block content %}
         {% endblock %}
     </body>
