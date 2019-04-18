@@ -92,8 +92,17 @@ def signup():
         password = request.form['password']
         verify = request.form['verify']
 
-        if not email or not password:
-            flash('One or more fields are invalid.', 'error')
+        if not email:
+            flash('Please enter an email.', 'error')
+
+        if not password:
+            flash('Please enter a password.', 'error')
+
+        if password != verify:
+            flash('Passwords mismatch.', 'error')
+
+        if len(password) < 3 or len(password) > 25:
+            flash('Passwords must be between 3 and 25 characters long.', 'error')
 
         existing_user = User.query.filter_by(email=email).first()
         if not existing_user:
