@@ -37,15 +37,26 @@ class User(db.Model):
     password = db.Column(db.String(25))
     blogs = db.relationship('Blog', backref='owner')
 
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'signup']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('/login')
+
 @app.route('/blog', methods=['POST', 'GET'])
 def blogs():
 
-    #blog_owner = User.query.filter_by(email=session['email']).first()
+    
     #If Posted as new post
     if request.method == 'POST':
         #Collect form data, save to variables No commit yet to avoid erroneous database entries
         blog_title = request.form['title']
         blog_body = request.form['body']
+        blog_owner = User.query.filter_by(username=session['username']).first()
         new_blog = Blog(blog_title, blog_body, blog_owner)
         #Validation and Error
         title_error = ''
@@ -90,43 +101,53 @@ def new_post():
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
     if request.method == 'POST':
-        email = request.form['email']
+        username = request.form['username']
         password = request.form['password']
         verify = request.form['verify']
+        existing_user = User.query.filter_by(username=username).first()
 
-        if not email:
-            flash('Please enter an email.', 'error')
+        #Validation 
+        valid = True
+
+        if not username:
+            valid = False
+            flash('Please enter a username.', 'error')
+        elif len(username) < 3 or len(username) > 25:
+            valid = False
+            flash('Please enter a valid username between 3 and 25 characters.', 'error')
 
         if not password:
+            valid = False
             flash('Please enter a password.', 'error')
+        elif len(password) < 3 or len(password) > 25:
+            valid = False
+            flash('Please enter a valid password between 3 and 25 characters.', 'error')
 
         if password != verify:
-            flash('Passwords mismatch.', 'error')
+            valid = False
+            flash('Password mismatch.', 'error')
+        
 
-        if len(password) < 3 or len(password) > 25:
-            flash('Passwords must be between 3 and 25 characters long.', 'error')
-
-        existing_user = User.query.filter_by(email=email).first()
-        if not existing_user:
-            new_user = User(email, password)
+        existing_user = User.query.filter_by(username=username).first()
+        if not existing_user and valid == True:
+            new_user = User(username, password)
             db.session.add(new_user)
             db.session.commit()
-            session['email'] = email
+            session['username'] = username
             return redirect('/newpost')
-        else:
-            #TODO - response message
-            return '<h1> Duplicate User </h1>'
+        elif existing_user:
+            flash('Duplicate User', 'error')
 
-    return render_template('register.html')
+    return render_template('signup.html')
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(username=username).first()
         if user and user.password == password:
-            session['email'] = email
+            session['username'] = username
             flash("Logged in")
             return redirect('/newpost')
         elif user and user.password != password:
@@ -141,9 +162,10 @@ def login():
 def index():
     return render_template('index.html')
 
-@app.route('/logout', methods=['POST'])
+@app.route('/logout')
 def logout():
-    return redirect('/blog')
+    del session['username']
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run()
