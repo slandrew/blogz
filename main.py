@@ -19,6 +19,7 @@ class Blog(db.Model):
     body = db.Column(db.String(500))
     pub_date = db.Column(db.DateTime)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    deleted = db.Column(db.Integer)
 
     def __init__(self, title, body, owner):
         self.title = title
@@ -28,6 +29,7 @@ class Blog(db.Model):
             pub_date = datetime.utcnow()
         self.pub_date = pub_date
         self.owner = owner
+        self.deleted = False
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,7 +40,7 @@ class User(db.Model):
 @app.route('/blog', methods=['POST', 'GET'])
 def blogs():
 
-    blog_owner = User.query.filter_by(email=session['email']).first()
+    #blog_owner = User.query.filter_by(email=session['email']).first()
     #If Posted as new post
     if request.method == 'POST':
         #Collect form data, save to variables No commit yet to avoid erroneous database entries
