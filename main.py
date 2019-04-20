@@ -87,17 +87,15 @@ def blogs():
             blogs = Blog.query.order_by(desc(Blog.pub_date)).all()
             display_title = 'Blogs'
         #With an id parameter shows only posts with that id
-        elif blog_id:
-            owner = User.query.filter_by(id=user_id).first()
-            owner_id = owner.id
-            blogs = Blog.query.filter_by(id=blog_id, owner_id=owner_id).all()
-            blog = Blog.query.filter_by(id=blog_id, owner_id=owner_id).first()
+        elif blog_id and not user_id:
+            blogs = Blog.query.filter_by(id=blog_id).all()
+            blog = Blog.query.filter_by(id=blog_id).first()
             #TODO make title appear as title of blog id
             display_title = blog.title
         else:
             owner = User.query.filter_by(id=user_id).first()
             owner_id = owner.id
-            blogs = Blog.query.filter_by(owner_id=owner_id).all()
+            blogs = Blog.query.filter_by(owner_id=owner_id).order_by(desc(Blog.pub_date)).all()
             display_title = owner.username
         return render_template('blog.html', title=display_title, blogs=blogs)
 
