@@ -83,17 +83,18 @@ def blogs():
         blog_id = request.args.get('id')
         user_id = request.args.get('userId')
         #If no id parameter - shows all blogs
-        if not blog_id or not user_id:
+        if not blog_id and not user_id:
             blogs = Blog.query.order_by(desc(Blog.pub_date)).all()
             display_title = 'Blogs'
         #With an id parameter shows only posts with that id
         elif blog_id:
-            blogs = Blog.query.filter_by(id=blog_id).all()
-            blog = Blog.query.filter_by(id=blog_id).first()
+            owner_id = User.query.filter_by(id=user_id).all()
+            blogs = Blog.query.filter_by(id=blog_id, owner_id=owner_id).all()
+            blog = Blog.query.filter_by(id=blog_id, owner_id=owner_id).first()
             #TODO make title appear as title of blog id
             display_title = blog.title
         else:
-            owner_id = User.query.filter_by(id=user_id).all()
+            owner_id = User.query.filter_by(id=user_id).first()
             blogs = Blog.query.filter_by(owner_id=owner_id).all()
         return render_template('blog.html', title=display_title, blogs=blogs)
 
@@ -138,6 +139,7 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             session['username'] = username
+            flash('Account created!')
             return redirect('/newpost')
         elif existing_user:
             flash('Duplicate User', 'error')

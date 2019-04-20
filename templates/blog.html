@@ -8,7 +8,7 @@
             <div>
                 {% for blog in blogs %}
                 <div class='blog-post'>
-                    <a href='/blog?id={{blog.id}}'class='blog-title'><h2>{{blog.title}}</h2></a>
+                    <a href='/blog?id={{blog.id}}&userId={{blog.owner.id}}'class='blog-title'><h2>{{blog.title}}</h2></a>
                     <p class='blog-body'>{{blog.body}}</p>
                     <p id='tag-line'>
                         <span class ='blog-author'>Written by...<a href='/blog?userId={{blog.owner.id}}'>{{blog.owner.username}}</a></span>
