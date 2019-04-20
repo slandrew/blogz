@@ -51,7 +51,6 @@ def require_login():
 @app.route('/blog', methods=['POST', 'GET'])
 def blogs():
 
-    
     #If Posted as new post
     if request.method == 'POST':
         #Collect form data, save to variables No commit yet to avoid erroneous database entries
@@ -82,16 +81,20 @@ def blogs():
     #Handles get requests from either a redirect from a new post or first time on site and renders accordingly
     else:
         blog_id = request.args.get('id')
+        user_id = request.args.get('userId')
         #If no id parameter - shows all blogs
-        if not blog_id:
+        if not blog_id or not user_id:
             blogs = Blog.query.order_by(desc(Blog.pub_date)).all()
             display_title = 'Blogs'
         #With an id parameter shows only posts with that id
-        else:
+        elif blog_id:
             blogs = Blog.query.filter_by(id=blog_id).all()
             blog = Blog.query.filter_by(id=blog_id).first()
             #TODO make title appear as title of blog id
             display_title = blog.title
+        else:
+            owner_id = User.query.filter_by(id=user_id).all()
+            blogs = Blog.query.filter_by(owner_id=owner_id).all()
         return render_template('blog.html', title=display_title, blogs=blogs)
 
 #A very simple template to make a new post
@@ -159,9 +162,10 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/index')
+@app.route('/')
 def index():
-    return render_template('index.html')
+    users = User.query.all()
+    return render_template('index.html', users=users)
 
 @app.route('/logout')
 def logout():

@@ -10,7 +10,10 @@
                 <div class='blog-post'>
                     <a href='/blog?id={{blog.id}}'class='blog-title'><h2>{{blog.title}}</h2></a>
                     <p class='blog-body'>{{blog.body}}</p>
-                    <p class='pub-date'>{{blog.pub_date}}</p>
+                    <p id='tag-line'>
+                        <span class ='blog-author'>Written by...<a href='/blog?userId={{blog.owner.id}}'>{{blog.owner.username}}</a></span>
+                        <span class='pub-date'>{{blog.pub_date}}</span>
+                    </p>
                 </div>
                 {% endfor%}
             </div>
