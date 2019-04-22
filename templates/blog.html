@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>The Experience and Friends</h1>
+    <h1>{{blog_header}}</h1>
     {% if blogs|length == 0 %}
             <p>No blogs yet!</p>
         {% else %}
@@ -13,6 +13,12 @@
                     <p id='tag-line'>
                         <span class ='blog-author'>Written by...<a href='/blog?userId={{blog.owner.id}}'>{{blog.owner.username}}</a></span>
                         <span class='pub-date'>{{blog.pub_date}}</span>
+                        {% if blog.owner_id == logged_in_user.id %}
+                            <form method='post' action='/delete-post'>
+                                <input type='hidden' name='blog-id' value='{{blog.id}}' />
+                                <input type ='submit' value='Delete Post' />
+                            </form>
+                        {% endif %}
                     </p>
                 </div>
                 {% endfor%}
