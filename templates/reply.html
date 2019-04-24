@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Reply</h1>
+    <div class='blog-post'>
+        <a href='/blog?id={{blog.id}}'class='blog-title'><h2>{{blog.title}}</h2></a>
+        <p class='blog-body'>{{blog.body}}</p>
+        <p id='tag-line'>
+            <span class ='blog-author'>Written by...<a href='/blog?userId={{blog.owner.id}}'>{{blog.owner.username}}</a></span>
+            <span class='pub-date'>{{blog.pub_date}}</span>
+        </p>
+    </div>
+    <div>
+        <form method='post' action='/reply'>
+            <input type='hidden' name='title' value='Reply to {{blog.title}}'><p class='error'>{{title_error}}</p></br>
+            <label>
+                Reply:</br>
+                <textarea placeholder="Write your reply here..." name='body' rows='5' cols='50'>{{reply_body}}</textarea><p class='error'>{{body_error}}</p></br>
+            </label>
+            <input type='hidden' name='original-post-id' value='{{blog.id}}' />
+            <input type="submit" value='Post'>
+        </form>
+    </div>
+{% endblock %}

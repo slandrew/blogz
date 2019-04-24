@@ -13,7 +13,14 @@
                     <p id='tag-line'>
                         <span class ='blog-author'>Written by...<a href='/blog?userId={{blog.owner.id}}'>{{blog.owner.username}}</a></span>
                         <span class='pub-date'>{{blog.pub_date}}</span>
+                    </p>
+                </br>
+                    <form action='/reply' method='GET'>
+                        <input type='hidden' name='blogId' value={{blog.id}} />
+                        <input type='submit' value='Reply' />
+                    </form>
                         {% if blog.owner_id == logged_in_user.id %}
+                </br>
                             <form method='post' action='/delete-post'>
                                 <input type='hidden' name='blog-id' value='{{blog.id}}' />
                                 <input type ='submit' value='Delete Post' />
@@ -21,6 +28,18 @@
                         {% endif %}
                     </p>
                 </div>
+                    {% for reply in replies %}
+                        {% if reply.original_post_id == blog.id %}
+                        <div class='reply-post'>
+                            <a href='/blog?id={{blog.id}}'class='blog-title'><h6>{{reply.title}}</h6></a>
+                            <p class='blog-body'>{{reply.body}}</p>
+                            <p id='tag-line'>
+                                    <span class ='blog-author'>Written by...<a href='/blog?userId={{reply.owner.id}}'>{{reply.owner.username}}</a></span>
+                                    <span class='pub-date'>{{reply.pub_date}}</span>
+                            </p>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor%}
             </div>
     {% endif %}

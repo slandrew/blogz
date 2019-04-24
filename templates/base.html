@@ -7,6 +7,10 @@
                 color: red;
                 text-align: center;
             }
+            .success {
+                color: greenyellow;
+                text-align:center;
+            }
             body {
                 background-color: black;
                 color: white;
@@ -37,6 +41,11 @@
                 font-size: 1em;
                 float: right;
             }
+            .reply-button {
+                float: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
             .blog-author {
                 font-size: 1em;
                 float: left;
@@ -52,7 +61,11 @@
                 border-top: 10px solid darkslateblue;
                 padding-bottom: 20px;
             }
-
+            .reply-post {
+                border-top: 10px solid darkslateblue;
+                padding-bottom: 20px;
+                margin-left: 10%;
+            }
             ul {
                 list-style-type:none;
                 position:relative;
@@ -82,6 +95,7 @@
             <a href='/blog' class='nav-button'>Blogs</a>
             <a href='/newpost' class='nav-button'>New Post</a>
             {% if logged_in %}
+                <a href='/blog?userId={{logged_in_user.id}}' class='nav-button'>My Wall</a>
                 <a href='/logout' class='nav-button'>Logout</a>
             {% else %}
                 <a href='/login' class='nav-button'>Login</a>
@@ -90,7 +104,9 @@
         </div>
     </head>
     <body>
+        <div>
         {% with messages = get_flashed_messages(with_categories=True) %}
+        </br>
             <ul>
             {% for category,message in messages %}
                 <li class="{{category}}">{{message}}</li>
@@ -99,5 +115,6 @@
         {% endwith %}
         {% block content %}
         {% endblock %}
+        </div>
     </body>
 </html>
