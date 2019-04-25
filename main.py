@@ -10,7 +10,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:MyNewPass@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
-#This is used for sessions. Imported for the next assignment
+#This is used for sessions. Still not ENTIRELY sure how this is sues, but it has to do with encryption
 app.secret_key = 'y337kGcys&zP3B'
 
 class Blog(db.Model):
@@ -42,7 +42,7 @@ class User(db.Model):
     def __init__(self, username, password):
         self.username = username
         self.password = password
-
+#I wanted to inherit from the Blog class but couldnt quite figure it out TODO: refactor with inheritence
 class Reply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
@@ -210,6 +210,7 @@ def login():
             flash('User does not exist.', 'error')
     return render_template('login.html', logged_in=logged_in(), logged_in_user=logged_in_user())
 
+#index displays list of all users with links
 @app.route('/')
 def index():
     users = User.query.all()
@@ -221,6 +222,7 @@ def logout():
     flash('Successfully logged out', 'success')
     return redirect('/blog')
 
+#delete post if user is original poster
 @app.route('/delete-post', methods=['POST'])
 def delete_post():
     blog_id = int(request.form['blog-id'])
@@ -231,6 +233,7 @@ def delete_post():
 
     return redirect('/blog')
 
+#handles GET requests to render teplate and POSTS to add reply to DB
 @app.route('/reply', methods=['POST', 'GET'])
 def reply():
     if request.method == 'GET':
