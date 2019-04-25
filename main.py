@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 #Googled a way to be able to order by DESC
 from sqlalchemy import desc
+from secure import pass_hash, salt
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -35,13 +36,15 @@ class Blog(db.Model):
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25))
-    password = db.Column(db.String(25))
+    password = db.Column(db.String(128))
+    salt = db.Column(db.String(5))
     blogs = db.relationship('Blog', backref='owner')
     replies = db.relationship('Reply', backref='owner')
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, salt):
         self.username = username
         self.password = password
+        self.salt = salt
 #I wanted to inherit from the Blog class but couldnt quite figure it out TODO: refactor with inheritence
 class Reply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -184,7 +187,9 @@ def signup():
 
         existing_user = User.query.filter_by(username=username).first()
         if not existing_user and valid == True:
-            new_user = User(username, password)
+            salt_value = salt()
+            hashed_pass = pass_hash(password + salt_value)
+            new_user = User(username, hashed_pass, salt_value)
             db.session.add(new_user)
             db.session.commit()
             session['username'] = username
@@ -200,7 +205,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
-        if user and user.password == password:
+        if user and user.password == pass_hash(password + user.salt):
             session['username'] = username
             flash("Logged in", 'success')
             return redirect('/newpost')
